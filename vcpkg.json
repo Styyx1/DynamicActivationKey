@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "skse-template",
+  "version-semver": "1.0.0",
+  "dependencies": [
+    "fmt",
+    "spdlog",
+    "rapidcsv",
+    "simpleini",
+    "rsm-binary-io",
+    "xbyak",
+    "directxtk",
+    "clib-util"
+  ],
+  "license": "GPL-3.0-or-later",
+  "vcpkg-configuration": {
+    "default-registry": {
+      "kind": "git",
+      "repository": "https://github.com/microsoft/vcpkg",
+      "baseline": "ad3bae57455a3c3ce528fcd47d8e8027d0498add"
+    }
+  }
+}
