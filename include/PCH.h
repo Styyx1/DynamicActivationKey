@@ -146,9 +146,8 @@
 #include <ShlObj_core.h>
 #include <Psapi.h>
 #include <Windows.h>
-#include <ClibUtil/simpleINI.hpp>
-#include <ClibUtil/singleton.hpp>
-#include <ClibUtil/distribution.hpp>
+#include <SimpleIni.h>
+
 // clang-format on
 
 #include <spdlog/sinks/basic_file_sink.h>

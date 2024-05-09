@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.29)
 message("Using toolchain file ${CMAKE_TOOLCHAIN_FILE}.")
 
 project(
@@ -6,18 +6,11 @@ project(
   VERSION 1.0.0
   LANGUAGES CXX
 )
-
-#Enable for 1130 changes
-set(BUILD_SKYRIMAE1130 OFF)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
-set(SKSE_SUPPORT_XBYAK ON)
-
-set(ENABLE_SKYRIM_VR ON)
 
 include(GNUInstallDirs)
 
@@ -99,15 +92,11 @@ install(
   DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL Debug)
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
   set(BUILD_NAME Debug)
-else()
+else ()
   set(BUILD_NAME Release)
-endif()
-
-if(BUILD_SKYRIMAE1130)
-  set(BUILD_NAME ${BUILD_NAME}1130)
-endif()
+endif ()
 
 add_custom_command(
   TARGET ${PROJECT_NAME}
