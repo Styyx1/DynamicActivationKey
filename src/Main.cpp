@@ -1,6 +1,8 @@
 #include "Logging.h"
 #include "SKSE/Interfaces.h"
 #include "Settings.h"
+#include "Papyrus.h"
+#include "InputManager.h"
 
 void Listener(SKSE::MessagingInterface::Message* message) noexcept
 {
@@ -8,7 +10,9 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
         auto settings = Settings::GetSingleton();
         settings->LoadSettings();
         settings->LoadForms();
+        Event::InputEventSink::Register();
     }
+
 }
 
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
@@ -20,9 +24,13 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
 
     logger::info("{} {} is loading...", plugin->GetName(), version);
     Init(skse);
-
+    
+    Cache::CacheAddLibAddresses();
     if (const auto messaging{ SKSE::GetMessagingInterface() }; !messaging->RegisterListener(Listener))
         return false;
+
+    auto papyrus = SKSE::GetPapyrusInterface();
+    papyrus->Register(Papyrus::Bind);
 
     logger::info("{} has finished loading.", plugin->GetName());
 

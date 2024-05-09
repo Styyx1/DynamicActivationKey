@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 message("Using toolchain file ${CMAKE_TOOLCHAIN_FILE}.")
 
 project(
-  SKSETEmplate
+  DynamicActivationKey
   VERSION 1.0.0
   LANGUAGES CXX
 )
