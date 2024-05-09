@@ -51,11 +51,7 @@
         "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX"
       },
       "generator": "Visual Studio 16 2019",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows"
-      ],
+      "inherits": ["cmake-dev", "vcpkg", "windows"],
       "name": "vs2019-windows",
       "toolset": "v142"
     },
@@ -68,11 +64,7 @@
         "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX"
       },
       "generator": "Visual Studio 17 2022",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows"
-      ],
+      "inherits": ["cmake-dev", "vcpkg", "windows"],
       "name": "vs2022-windows",
       "toolset": "v143"
     },
@@ -83,9 +75,7 @@
           "value": "$env{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
         }
       },
-      "inherits": [
-        "vs2022-windows"
-      ],
+      "inherits": ["vs2022-windows"],
       "name": "github-workflows"
     }
   ],
