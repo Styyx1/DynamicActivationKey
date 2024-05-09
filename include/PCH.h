@@ -157,7 +157,6 @@
 using namespace std::literals;
 using namespace REL::literals;
 
-
 namespace logger = SKSE::log;
 
 template <class T>
