@@ -1,6 +1,6 @@
 #pragma once
-#include "Settings.h"
 #include "Cache.h"
+#include "Settings.h"
 
 namespace Event
 {
@@ -29,18 +29,17 @@ namespace Event
             logger::debug("changed Global {} to {}", global_toChange->GetFormEditorID(), new_value);
         };
 
-        static bool IsCorrectKey(uint32_t compare_key) 
+        static bool IsCorrectKey(uint32_t compare_key)
         {
             Settings* settings = Settings::GetSingleton();
             if (compare_key == settings->DAKModifierKey || compare_key == settings->DAKControllerKey) {
                 return true;
             }
             else
-                return false;          
-
+                return false;
         }
 
-       public:
+    public:
         RE::BSEventNotifyControl ProcessEvent(RE::InputEvent* const* eventPtr, RE::BSTEventSource<RE::InputEvent*>*)
         {
             if (!eventPtr)
@@ -71,14 +70,14 @@ namespace Event
                         key_code = mask;
 
                     if (key_code >= SKSE::InputMap::kMaxMacros)
-                        continue;                   
+                        continue;
 
                     if (IsCorrectKey(key_code) && held) {
                         if (settings->DAKGlobal->value != 1) {
                             settings->DAKGlobal->value = 1;
                             logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
                             SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                        }                        
+                        }
                     }
                     else {
                         if (IsCorrectKey(key_code) && !held) {
@@ -86,7 +85,7 @@ namespace Event
                                 settings->DAKGlobal->value = 0;
                                 logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
                                 SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                            } 
+                            }
                         }
                     }
                 }
@@ -94,11 +93,8 @@ namespace Event
             return RE::BSEventNotifyControl::kContinue;
         };
 
-
     private:
         InputEventSink() = default;
     };
 
-}
-
-
+} // namespace Event

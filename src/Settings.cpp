@@ -8,10 +8,10 @@ void Settings::LoadSettings() noexcept
     CSimpleIniA ini;
     ini.SetUnicode();
     ini.LoadFile(path);
- 
-    DAKModifierKey = std::stoi(ini.GetValue("Keys", "iDAKModifierKey", "42"));
+
+    DAKModifierKey   = std::stoi(ini.GetValue("Keys", "iDAKModifierKey", "42"));
     DAKControllerKey = std::stoi(ini.GetValue("Keys", "iDAKControllerKey", "274"));
-    debug_logging = ini.GetBoolValue("Log", "Debug");
+    debug_logging    = ini.GetBoolValue("Log", "Debug");
 
     if (debug_logging) {
         spdlog::get("Global")->set_level(spdlog::level::level_enum::debug);
@@ -21,8 +21,6 @@ void Settings::LoadSettings() noexcept
     (void)ini.SaveFile(path);
     // Load settings
     logger::info("Loaded settings");
-
-    
 };
 
 RE::FormID Settings::ParseFormID(const std::string& str)
@@ -35,7 +33,7 @@ RE::FormID Settings::ParseFormID(const std::string& str)
 
 void Settings::SaveKeySettings(std::string a_setting, int a_keyCode)
 {
-    constexpr auto path     = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
+    constexpr auto path = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
     logger::debug("Load settings for saving");
     auto        keySet = std::to_string(a_keyCode);
     CSimpleIniA ini;
@@ -46,14 +44,15 @@ void Settings::SaveKeySettings(std::string a_setting, int a_keyCode)
     logger::debug("saved new settings");
 }
 
-void Settings::SetKey(int a_keyCode) {
+void Settings::SetKey(int a_keyCode)
+{
     DAKModifierKey = a_keyCode;
 }
 
-void Settings::SetControllerKey(int a_keyCode) {
+void Settings::SetControllerKey(int a_keyCode)
+{
     DAKControllerKey = a_keyCode;
 }
-
 
 void Settings::LoadForms() noexcept
 {

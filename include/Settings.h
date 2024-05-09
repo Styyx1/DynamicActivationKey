@@ -5,7 +5,7 @@ class Settings : public Singleton<Settings>
 public:
     void LoadSettings() noexcept;
 
-    void LoadForms() noexcept;
+    void                   LoadForms() noexcept;
     std::string            FileName;
     inline static uint32_t DAKModifierKey;
     inline static uint32_t DAKControllerKey;
