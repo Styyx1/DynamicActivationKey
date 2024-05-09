@@ -2,48 +2,46 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "**.h"
+      - "**.cpp"
+      - "**.yml"
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
-  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-cache
+  VCPKG_COMMIT_ID: 28b1cf627c0570b3e094192df2fce31a3a2bc1d3
 
 jobs:
-  build:
+  test-build:
     runs-on: windows-latest
-
+    strategy:
+      matrix:
+        preset:
+          - release
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup vcpkg
-      run: |
-        mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-        cd $env:VCPKG_INSTALLATION_ROOT
-        ./bootstrap-vcpkg.bat
-        ./vcpkg --version > ${{ github.workspace }}/vcpkg-version.txt
+      - name: Get CMake
+        uses: lukka/get-cmake@latest
 
-    - name: Cache vcpkg
-      uses: actions/cache@v4
-      id: vcpkg-cache
-      env:
-        cache-name: vcpkg-cache
-      with:
-        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}/*
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('main/**/vcpkg.json', 'vcpkg-version.txt') }}
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: ${{ env.VCPKG_COMMIT_ID }}
 
-    - name: Configure CMake
-      run: cmake --preset build-release-msvc -Wno-deprecated
+      - name: Initialize submodules
+        run: git submodule update --init --recursive
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - name: Run CMake
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: build-${{ matrix.preset }}-msvc
+          buildPreset: ${{ matrix.preset }}-msvc
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: DynamicActivationKey
-        path: ${{ github.workspace }}/build/${{ env.BUILD_TYPE }}/DynamicActivationKey.dll
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: DynamicActivationKey
+            path: ${{ github.workspace }}/contrib/PluginRelease
