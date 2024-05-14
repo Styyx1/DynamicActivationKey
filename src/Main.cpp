@@ -4,6 +4,7 @@
 #include "SKSE/Interfaces.h"
 #include "Settings.h"
 
+
 void Listener(SKSE::MessagingInterface::Message* message) noexcept
 {
     if (message->type <=> SKSE::MessagingInterface::kDataLoaded == 0) {
@@ -11,6 +12,7 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
         settings->LoadSettings();
         settings->LoadForms();
         Event::InputEventSink::Register();
+        Event::UI::CrossHair::Install();
     }
 }
 

@@ -12,6 +12,8 @@ void Settings::LoadSettings() noexcept
     DAKModifierKey   = std::stoi(ini.GetValue("Keys", "iDAKModifierKey", "42"));
     DAKControllerKey = std::stoi(ini.GetValue("Keys", "iDAKControllerKey", "274"));
     debug_logging    = ini.GetBoolValue("Log", "Debug");
+    activate_key_locking = ini.GetBoolValue("Settings", "bActivateLocking");
+
 
     if (debug_logging) {
         spdlog::get("Global")->set_level(spdlog::level::level_enum::debug);
@@ -60,7 +62,8 @@ void Settings::LoadForms() noexcept
     logger::info("Loading forms");
     DAKGlobal = dataHandler->LookupForm(RE::FormID(0x801), DAKPluginName)->As<RE::TESGlobal>();
     logger::debug("Parsed Global Form id successfully, ID is {}", DAKGlobal->GetFormID());
-
+    DAKLock = dataHandler->LookupForm(RE::FormID(0x802), DAKPluginName)->As<RE::TESGlobal>();
+    logger::debug("Parsed Global Form id successfully, ID is {}", DAKLock->GetFormID());
     logger::info("All Forms loaded");
 
 } // Credits: Colinswrath https://github.com/colinswrath/BladeAndBlunt

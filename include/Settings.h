@@ -11,6 +11,8 @@ public:
     inline static uint32_t DAKControllerKey;
     RE::TESGlobal*         DAKGlobal;
     RE::TESGlobal*         DAKKeyBind;
+    RE::TESGlobal*         DAKLock;
+
     const std::string_view DAKPluginName = "Dynamic Activation Key.esp";
 
     static RE::FormID ParseFormID(const std::string& str);
@@ -18,5 +20,6 @@ public:
     void              SetKey(int a_keyCode);
     void              SetControllerKey(int a_keyCode);
 
+    inline static bool activate_key_locking{ false };
     inline static bool debug_logging{};
 };
