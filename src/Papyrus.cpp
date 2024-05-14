@@ -43,6 +43,28 @@ namespace Papyrus
         logger::debug("Saved new key setting as {}", settings->DAKControllerKey);
     }
 
+    inline bool GetLockSetting(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*)
+    {
+        auto           settings = Settings::GetSingleton();
+        bool            a_option;
+        constexpr auto path = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
+        logger::info("temp load settings");
+        CSimpleIniA ini;
+        ini.SetUnicode();
+        ini.LoadFile(path);
+        settings->activate_key_locking = ini.GetBoolValue("Settings", "bActivateLocking");
+        a_option                       = settings->activate_key_locking;
+        return a_option;
+    }
+
+    inline void SetLockSettingBool(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, bool lock_option)
+    {
+        Settings* settings = Settings::GetSingleton();
+        settings->ChangeLockOption(lock_option);
+        settings->SaveLockOption(lock_option);
+        logger::debug("changed lock enable setting");
+    }
+
     bool Bind(VM* a_vm)
     {
         if (!a_vm) {
@@ -57,6 +79,10 @@ namespace Papyrus
         logger::info("Registered SetModKeySetting"sv);
         BIND(SetModControllerKeySetting);
         logger::info("Registered SetModControllerKeySetting"sv);
+        BIND(GetLockSetting);
+        logger::info("Registered GetLockSetting"sv);
+        BIND(SetLockSettingBool);
+        logger::info("Registered SetLockSettingBool"sv);
 
         return true;
     }

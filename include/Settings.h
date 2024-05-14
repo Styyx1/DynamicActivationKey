@@ -19,6 +19,8 @@ public:
     static void       SaveKeySettings(std::string a_setting, int a_keyCode);
     void              SetKey(int a_keyCode);
     void              SetControllerKey(int a_keyCode);
+    void              ChangeLockOption(bool lock_option);
+    static void       SaveLockOption(bool lock_option);
 
     inline static bool activate_key_locking{ false };
     inline static bool debug_logging{};
