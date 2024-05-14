@@ -4,7 +4,6 @@
 #include "SKSE/Interfaces.h"
 #include "Settings.h"
 
-
 void Listener(SKSE::MessagingInterface::Message* message) noexcept
 {
     if (message->type <=> SKSE::MessagingInterface::kDataLoaded == 0) {
