@@ -9,11 +9,10 @@ void Settings::LoadSettings() noexcept
     ini.SetUnicode();
     ini.LoadFile(path);
 
-    DAKModifierKey   = std::stoi(ini.GetValue("Keys", "iDAKModifierKey", "42"));
-    DAKControllerKey = std::stoi(ini.GetValue("Keys", "iDAKControllerKey", "274"));
-    debug_logging    = ini.GetBoolValue("Log", "Debug");
+    DAKModifierKey       = std::stoi(ini.GetValue("Keys", "iDAKModifierKey", "42"));
+    DAKControllerKey     = std::stoi(ini.GetValue("Keys", "iDAKControllerKey", "274"));
+    debug_logging        = ini.GetBoolValue("Log", "Debug");
     activate_key_locking = ini.GetBoolValue("Settings", "bActivateLocking");
-
 
     if (debug_logging) {
         spdlog::get("Global")->set_level(spdlog::level::level_enum::debug);
@@ -33,7 +32,6 @@ RE::FormID Settings::ParseFormID(const std::string& str)
     return result;
 }
 
-
 void Settings::SaveKeySettings(std::string a_setting, int a_keyCode)
 {
     constexpr auto path = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
@@ -50,7 +48,7 @@ void Settings::SaveKeySettings(std::string a_setting, int a_keyCode)
 void Settings::SaveLockOption(bool lock_option)
 {
     constexpr auto path = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
-    logger::debug("Load settings for bool saving");    
+    logger::debug("Load settings for bool saving");
     CSimpleIniA ini;
     ini.SetUnicode();
     ini.LoadFile(path);

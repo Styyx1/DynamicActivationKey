@@ -46,7 +46,7 @@ namespace Papyrus
     inline bool GetLockSetting(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*)
     {
         auto           settings = Settings::GetSingleton();
-        bool            a_option;
+        bool           a_option;
         constexpr auto path = L"Data/SKSE/Plugins/DynamicActivationKey.ini";
         logger::info("temp load settings");
         CSimpleIniA ini;
