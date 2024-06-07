@@ -51,9 +51,9 @@ namespace Event
             if (RE::PlayerCharacter* player = Cache::GetPlayerSingleton(); !player || !player->Is3DLoaded()) {
                 return RE::BSEventNotifyControl::kContinue;
             }
-            RE::IUIMessageData*  a_data       = nullptr;
-            const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
-            const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
+            RE::IUIMessageData* a_data       = nullptr;
+            const auto          data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
+            const auto          crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
 
             for (RE::InputEvent* evnt = *eventPtr; evnt; evnt = evnt->next) {
                 switch (evnt->eventType.get()) {
@@ -86,14 +86,13 @@ namespace Event
                         settings->DAKGlobal->value = 0;
                         logger::debug("set {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
                         SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                        
                     }
 
                     if (!IsCorrectKey(key_code) && !held && settings->DAKGlobal->value != 0) {
                         settings->DAKGlobal->value = 0;
                         logger::debug("set {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
                         SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                    } 
+                    }
 
                     if (IsCorrectKey(key_code) && held) {
                         if (settings->DAKGlobal->value != 1) {
@@ -154,7 +153,6 @@ namespace Event
                     const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
                     const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
                     RE::PlayerCharacter* player       = Cache::GetPlayerSingleton();
-                    
 
                     if (data && crossHairRef) {
                         const auto settings = Settings::GetSingleton();
@@ -177,7 +175,7 @@ namespace Event
                                     else
                                         settings->DAKLock->value = 0;
                                 }
-                            }                            
+                            }
                         }
                     }
                     func(a_this, a_menuName, a_type, a_data);
