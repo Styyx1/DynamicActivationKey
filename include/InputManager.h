@@ -82,17 +82,6 @@ namespace Event
 
                     if (key_code >= SKSE::InputMap::kMaxMacros)
                         continue;
-                    if (!IsCorrectKey(key_code) && settings->DAKGlobal->value != 0) {
-                        settings->DAKGlobal->value = 0;
-                        logger::debug("set {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                        SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                    }
-
-                    if (!IsCorrectKey(key_code) && !held && settings->DAKGlobal->value != 0) {
-                        settings->DAKGlobal->value = 0;
-                        logger::debug("set {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                        SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                    }
 
                     if (IsCorrectKey(key_code) && held) {
                         if (settings->DAKGlobal->value != 1) {
@@ -102,7 +91,7 @@ namespace Event
                         }
                     }
                     else {
-                        if (IsCorrectKey(key_code) && !held) {
+                        if (IsCorrectKey(key_code) && !held || !IsCorrectKey(key_code)) {
                             if (settings->DAKGlobal->value != 0) {
                                 settings->DAKGlobal->value = 0;
                                 logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
