@@ -11,9 +11,21 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
         settings->LoadSettings();
         settings->LoadForms();
         Event::InputEventSink::Register();
-        Event::UI::CrossHair::Install();
+        //Event::UI::CrossHair::Install();
     }
 }
+
+extern "C" DLLEXPORT constexpr auto SKSEPlugin_Version = []() {
+    SKSE::PluginVersionData v{};
+    v.PluginVersion(REL::Version{ 1, 2, 0, 0 });
+    v.PluginName("DynamicActivationKey"sv);
+    v.AuthorName("Styyx"sv);
+    v.UsesAddressLibrary(true);
+    v.HasNoStructUse(true);
+    v.UsesStructsPost629(false);
+    return v;
+}();
+
 
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {

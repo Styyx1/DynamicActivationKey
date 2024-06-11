@@ -58,7 +58,6 @@ namespace Event
             const Settings* settings = Settings::GetSingleton();
 
             if (!eventPtr) {
-                logger::debug("not event");
                 return RE::BSEventNotifyControl::kContinue;
             }
 
@@ -70,10 +69,6 @@ namespace Event
             if (RE::PlayerCharacter* player = Cache::GetPlayerSingleton(); !player || !player->Is3DLoaded()) {
                 return RE::BSEventNotifyControl::kContinue;
             }
-            RE::IUIMessageData* a_data       = nullptr;
-            const auto          data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
-            const auto          crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
-            RE::UI*             ui           = RE::UI::GetSingleton();
 
             for (RE::InputEvent* evnt = *eventPtr; evnt; evnt = evnt->next) {
                 switch (evnt->eventType.get()) {
@@ -97,32 +92,34 @@ namespace Event
 
                     if (key_code >= SKSE::InputMap::kMaxMacros)
                         continue;
-                    bool rightKeyHeld = IsCorrectKey(key_code) && held;
-                    bool contKeyHeld  = false;
 
-                    if (key_code == settings->DAKControllerKey) {
-                        logger::debug("cont key held");
-                        contKeyHeld = a_event->IsDown();
+                    if (settings->DAKGlobal->value != 0) {
+                        settings->DAKGlobal->value = 0;
+                        UpdateHUD();
                     }
 
-                    if (rightKeyHeld) {
-                        if (settings->DAKGlobal->value != 1) {
-                            settings->DAKGlobal->value = 1;
-                            if (settings->DAKGlobal->value == 1) {
-                                logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                UpdateHUD();
+                    
+                    if (IsCorrectKey(key_code) && held) {
+                            if (settings->DAKGlobal->value != 1) {
+                                settings->DAKGlobal->value = 1;
+                                if (settings->DAKGlobal->value == 1) {
+                                    logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
+                                    UpdateHUD();
+                                }
                             }
                         }
                     }
-                    else if (IsCorrectKey(key_code) && !held) {
-                        if (settings->DAKGlobal->value != 0) {
-                            settings->DAKGlobal->value = 0;
-                            if (settings->DAKGlobal->value == 0) {
-                                logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                UpdateHUD();
+                    else {
+                        if (IsCorrectKey(key_code) && !held) {
+                            if (settings->DAKGlobal->value != 0) {
+                                settings->DAKGlobal->value = 0;
+                                if (settings->DAKGlobal->value == 0) {
+                                    logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
+                                    UpdateHUD();
+                                }
                             }
                         }
-                    }
+                    }                   
                 }
             }
             return RE::BSEventNotifyControl::kContinue;

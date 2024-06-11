@@ -153,6 +153,8 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
 
+#define DLLEXPORT __declspec(dllexport)
+
 using namespace std::literals;
 using namespace REL::literals;
 
