@@ -98,108 +98,108 @@ namespace Event
                         UpdateHUD();
                     }
 
-                    
                     if (IsCorrectKey(key_code) && held) {
-                            if (settings->DAKGlobal->value != 1) {
-                                settings->DAKGlobal->value = 1;
-                                if (settings->DAKGlobal->value == 1) {
-                                    logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                    UpdateHUD();
-                                }
+                        if (settings->DAKGlobal->value != 1) {
+                            settings->DAKGlobal->value = 1;
+                            if (settings->DAKGlobal->value == 1) {
+                                logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
+                                UpdateHUD();
                             }
                         }
                     }
-                    else {
-                        if (IsCorrectKey(key_code) && !held) {
-                            if (settings->DAKGlobal->value != 0) {
-                                settings->DAKGlobal->value = 0;
-                                if (settings->DAKGlobal->value == 0) {
-                                    logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                    UpdateHUD();
-                                }
+                }
+                else {
+                    if (IsCorrectKey(key_code) && !held) {
+                        if (settings->DAKGlobal->value != 0) {
+                            settings->DAKGlobal->value = 0;
+                            if (settings->DAKGlobal->value == 0) {
+                                logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
+                                UpdateHUD();
                             }
                         }
-                    }                   
+                    }
                 }
             }
-            return RE::BSEventNotifyControl::kContinue;
-        };
+        }
 
-    private:
-        InputEventSink() = default;
+        return RE::BSEventNotifyControl::kContinue;
     };
 
-    namespace UI
+private:
+    InputEventSink() = default;
+};
+
+namespace UI
+{
+
+    namespace CrossHair
     {
-
-        namespace CrossHair
+        enum : std::uint32_t
         {
-            enum : std::uint32_t
+            kPrompt,
+            kName,
+            kTag
+        };
+
+        struct detail
+        {
+            static bool has_gold_value(const RE::TESObjectREFRPtr& a_object)
             {
-                kPrompt,
-                kName,
-                kTag
-            };
+                const auto base = a_object ? a_object->GetBaseObject() : nullptr;
+                return base && base->GetGoldValue() > 0;
+            }
 
-            struct detail
+            static bool has_key(const RE::TESObjectREFRPtr& a_object)
             {
-                static bool has_gold_value(const RE::TESObjectREFRPtr& a_object)
-                {
-                    const auto base = a_object ? a_object->GetBaseObject() : nullptr;
-                    return base && base->GetGoldValue() > 0;
-                }
+                const auto lock = a_object ? a_object->GetLock() : nullptr;
+                return lock && lock->key;
+            }
+        };
 
-                static bool has_key(const RE::TESObjectREFRPtr& a_object)
-                {
-                    const auto lock = a_object ? a_object->GetLock() : nullptr;
-                    return lock && lock->key;
-                }
-            };
-
-            struct SendHUDMessage
+        struct SendHUDMessage
+        {
+            static void thunk(RE::UIMessageQueue* a_this, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
             {
-                static void thunk(RE::UIMessageQueue* a_this, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
-                {
-                    const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
-                    const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
-                    RE::PlayerCharacter* player       = Cache::GetPlayerSingleton();
+                const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
+                const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
+                RE::PlayerCharacter* player       = Cache::GetPlayerSingleton();
 
-                    if (data && crossHairRef) {
-                        const auto settings = Settings::GetSingleton();
-                        if (settings->activate_key_locking) {
-                            if (crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Door || crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Container) {
-                                logger::debug("[CROSSHAIR] crosshair Ref active");
-                                if (crossHairRef.get()->GetLock() != nullptr) {
-                                    logger::debug("[CROSSHAIR] has a lock");
-                                    if (auto the_key = crossHairRef.get()->GetLock()->key; the_key != nullptr && player->GetItemCount(the_key) > 0) {
-                                        logger::debug("[CROSSHAIR] found key");
-                                        if (settings->DAKGlobal->value == 1) {
-                                            logger::debug("[CROSSHAIR] found DAK status ");
-                                            settings->DAKLock->value = 1;
-                                            logger::debug("[CROSSHAIR] changed Global {} to {}", settings->DAKLock->GetFormEditorID(), settings->DAKLock->value);
-                                            SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
-                                        }
-                                        else
-                                            settings->DAKLock->value = 0;
+                if (data && crossHairRef) {
+                    const auto settings = Settings::GetSingleton();
+                    if (settings->activate_key_locking) {
+                        if (crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Door || crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Container) {
+                            logger::debug("[CROSSHAIR] crosshair Ref active");
+                            if (crossHairRef.get()->GetLock() != nullptr) {
+                                logger::debug("[CROSSHAIR] has a lock");
+                                if (auto the_key = crossHairRef.get()->GetLock()->key; the_key != nullptr && player->GetItemCount(the_key) > 0) {
+                                    logger::debug("[CROSSHAIR] found key");
+                                    if (settings->DAKGlobal->value == 1) {
+                                        logger::debug("[CROSSHAIR] found DAK status ");
+                                        settings->DAKLock->value = 1;
+                                        logger::debug("[CROSSHAIR] changed Global {} to {}", settings->DAKLock->GetFormEditorID(), settings->DAKLock->value);
+                                        SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
                                     }
                                     else
                                         settings->DAKLock->value = 0;
                                 }
+                                else
+                                    settings->DAKLock->value = 0;
                             }
                         }
                     }
-                    func(a_this, a_menuName, a_type, a_data);
                 }
-
-                inline static REL::Relocation<decltype(thunk)> func;
-            };
-
-            static void Install()
-            {
-                REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(39535, 40621), REL::Relocate(0x289, 0x280) };
-                stl::write_thunk_call<SendHUDMessage>(target.address());
+                func(a_this, a_menuName, a_type, a_data);
             }
-        } // namespace CrossHair
-    }     // namespace UI
+
+            inline static REL::Relocation<decltype(thunk)> func;
+        };
+
+        static void Install()
+        {
+            REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(39535, 40621), REL::Relocate(0x289, 0x280) };
+            stl::write_thunk_call<SendHUDMessage>(target.address());
+        }
+    } // namespace CrossHair
+} // namespace UI
 
 } // namespace Event

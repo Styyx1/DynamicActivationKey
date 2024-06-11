@@ -11,7 +11,7 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
         settings->LoadSettings();
         settings->LoadForms();
         Event::InputEventSink::Register();
-        //Event::UI::CrossHair::Install();
+        // Event::UI::CrossHair::Install();
     }
 }
 
@@ -25,7 +25,6 @@ extern "C" DLLEXPORT constexpr auto SKSEPlugin_Version = []() {
     v.UsesStructsPost629(false);
     return v;
 }();
-
 
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
