@@ -38,16 +38,17 @@ namespace Event
             if (compare_key == settings->DAKControllerKey) {
                 logger::debug("controller key held");
                 return true;
-            }            
-            else if (compare_key == settings->DAKModifierKey ) {
+            }
+            else if (compare_key == settings->DAKModifierKey) {
                 return true;
-            }            
+            }
             else {
                 return false;
             }
         }
 
-        static void UpdateHUD() {
+        static void UpdateHUD()
+        {
             SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
         }
 
@@ -65,7 +66,6 @@ namespace Event
                 settings->DAKGlobal->value = 0;
                 UpdateHUD();
             }
-               
 
             if (RE::PlayerCharacter* player = Cache::GetPlayerSingleton(); !player || !player->Is3DLoaded()) {
                 return RE::BSEventNotifyControl::kContinue;
@@ -78,14 +78,12 @@ namespace Event
             for (RE::InputEvent* evnt = *eventPtr; evnt; evnt = evnt->next) {
                 switch (evnt->eventType.get()) {
                 case RE::INPUT_EVENT_TYPE::kButton:
-                    
-                    RE::ButtonEvent* a_event  = evnt->AsButtonEvent();
-                    bool             held     = a_event->IsHeld();
-                    bool             contKeyDown = a_event->IsDown();
-                    uint32_t         mask     = a_event->idCode;
-                    uint32_t         key_code;
 
-                    
+                    RE::ButtonEvent* a_event     = evnt->AsButtonEvent();
+                    bool             held        = a_event->IsHeld();
+                    bool             contKeyDown = a_event->IsDown();
+                    uint32_t         mask        = a_event->idCode;
+                    uint32_t         key_code;
 
                     if (a_event->GetDevice() == RE::INPUT_DEVICE::kMouse) {
                         key_code = SKSE::InputMap::kMacro_NumKeyboardKeys + mask;
@@ -106,25 +104,25 @@ namespace Event
                         logger::debug("cont key held");
                         contKeyHeld = a_event->IsDown();
                     }
-                    
+
                     if (rightKeyHeld) {
-                            if (settings->DAKGlobal->value != 1) {
-                                settings->DAKGlobal->value = 1;
-                                if (settings->DAKGlobal->value == 1) {
-                                    logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                    UpdateHUD();
-                                }
+                        if (settings->DAKGlobal->value != 1) {
+                            settings->DAKGlobal->value = 1;
+                            if (settings->DAKGlobal->value == 1) {
+                                logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
+                                UpdateHUD();
                             }
+                        }
                     }
                     else if (IsCorrectKey(key_code) && !held) {
-                       if (settings->DAKGlobal->value != 0) {
-                          settings->DAKGlobal->value = 0;
-                             if (settings->DAKGlobal->value == 0) {
+                        if (settings->DAKGlobal->value != 0) {
+                            settings->DAKGlobal->value = 0;
+                            if (settings->DAKGlobal->value == 0) {
                                 logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
                                 UpdateHUD();
-                             }
-                       }
-                    }                    
+                            }
+                        }
+                    }
                 }
             }
             return RE::BSEventNotifyControl::kContinue;
