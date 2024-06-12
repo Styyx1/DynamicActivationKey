@@ -1,6 +1,8 @@
 #pragma once
 #include "Cache.h"
 #include "Settings.h"
+#include "CLib/Key.h"
+#include "HotkeyManager.h"
 
 namespace Event
 {
@@ -31,12 +33,25 @@ namespace Event
             logger::debug("changed Global {} to {}", global_toChange->GetFormEditorID(), new_value);
         };
 
+        inline std::uint32_t RemapKey(std::uint32_t a_key, RE::INPUT_DEVICE a_device)
+        {
+            switch (a_device) {
+            case RE::INPUT_DEVICE::kKeyboard:
+                return a_key;
+            case RE::INPUT_DEVICE::kMouse:
+                return a_key + SKSE::InputMap::kMacro_MouseButtonOffset;
+            case RE::INPUT_DEVICE::kGamepad:
+                return SKSE::InputMap::GamepadMaskToKeycode(a_key);
+            default:
+                return a_key;
+            }
+        }
+
         static bool IsCorrectKey(uint32_t compare_key)
         {
             Settings* settings = Settings::GetSingleton();
 
             if (compare_key == settings->DAKControllerKey) {
-                logger::debug("controller key held");
                 return true;
             }
             else if (compare_key == settings->DAKModifierKey) {
@@ -52,78 +67,19 @@ namespace Event
             SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
         }
 
+        
+
     public:
-        RE::BSEventNotifyControl ProcessEvent(RE::InputEvent* const* eventPtr, RE::BSTEventSource<RE::InputEvent*>*)
+        RE::BSEventNotifyControl ProcessEvent(const Event* a_event, [[maybe_unused]] EventSource*)
         {
-            const Settings* settings = Settings::GetSingleton();
-
-            if (!eventPtr) {
+            if (!a_event || !RE::Main::GetSingleton()->gameActive) {
                 return RE::BSEventNotifyControl::kContinue;
             }
 
-            if (eventPtr && settings->DAKGlobal->value != 0) {
-                settings->DAKGlobal->value = 0;
-                UpdateHUD();
-            }
+            HotkeyManager::Process(a_event);
 
-            if (RE::PlayerCharacter* player = Cache::GetPlayerSingleton(); !player || !player->Is3DLoaded()) {
-                return RE::BSEventNotifyControl::kContinue;
-            }
-
-            for (RE::InputEvent* evnt = *eventPtr; evnt; evnt = evnt->next) {
-                switch (evnt->eventType.get()) {
-                case RE::INPUT_EVENT_TYPE::kButton:
-
-                    RE::ButtonEvent* a_event     = evnt->AsButtonEvent();
-                    bool             held        = a_event->IsHeld();
-                    bool             contKeyDown = a_event->IsDown();
-                    uint32_t         mask        = a_event->idCode;
-                    uint32_t         key_code;
-
-                    if (a_event->GetDevice() == RE::INPUT_DEVICE::kMouse) {
-                        key_code = SKSE::InputMap::kMacro_NumKeyboardKeys + mask;
-                    }
-
-                    else if (a_event->GetDevice() == RE::INPUT_DEVICE::kGamepad) {
-                        key_code = SKSE::InputMap::GamepadMaskToKeycode(mask);
-                    }
-                    else
-                        key_code = mask;
-
-                    if (key_code >= SKSE::InputMap::kMaxMacros)
-                        continue;
-
-                    if (settings->DAKGlobal->value != 0) {
-                        settings->DAKGlobal->value = 0;
-                        UpdateHUD();
-                    }
-
-                    if (IsCorrectKey(key_code) && held) {
-                        if (settings->DAKGlobal->value != 1) {
-                            settings->DAKGlobal->value = 1;
-                            if (settings->DAKGlobal->value == 1) {
-                                logger::debug("changed Global {} to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                UpdateHUD();
-                            }
-                        }
-                    }
-                }
-                else {
-                    if (IsCorrectKey(key_code) && !held) {
-                        if (settings->DAKGlobal->value != 0) {
-                            settings->DAKGlobal->value = 0;
-                            if (settings->DAKGlobal->value == 0) {
-                                logger::debug("changed Global {} back to {}", settings->DAKGlobal->GetFormEditorID(), settings->DAKGlobal->value);
-                                UpdateHUD();
-                            }
-                        }
-                    }
-                }
-            }
+            return RE::BSEventNotifyControl::kContinue;
         }
-
-        return RE::BSEventNotifyControl::kContinue;
-    };
 
 private:
     InputEventSink() = default;
