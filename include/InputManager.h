@@ -1,8 +1,8 @@
 #pragma once
-#include "Cache.h"
-#include "Settings.h"
 #include "CLib/Key.h"
+#include "Cache.h"
 #include "HotkeyManager.h"
+#include "Settings.h"
 
 namespace Event
 {
@@ -67,8 +67,6 @@ namespace Event
             SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
         }
 
-        
-
     public:
         RE::BSEventNotifyControl ProcessEvent(const Event* a_event, [[maybe_unused]] EventSource*)
         {
@@ -81,81 +79,81 @@ namespace Event
             return RE::BSEventNotifyControl::kContinue;
         }
 
-private:
-    InputEventSink() = default;
-};
+    private:
+        InputEventSink() = default;
+    };
 
-namespace UI
-{
-
-    namespace CrossHair
+    namespace UI
     {
-        enum : std::uint32_t
+
+        namespace CrossHair
         {
-            kPrompt,
-            kName,
-            kTag
-        };
-
-        struct detail
-        {
-            static bool has_gold_value(const RE::TESObjectREFRPtr& a_object)
+            enum : std::uint32_t
             {
-                const auto base = a_object ? a_object->GetBaseObject() : nullptr;
-                return base && base->GetGoldValue() > 0;
-            }
+                kPrompt,
+                kName,
+                kTag
+            };
 
-            static bool has_key(const RE::TESObjectREFRPtr& a_object)
+            struct detail
             {
-                const auto lock = a_object ? a_object->GetLock() : nullptr;
-                return lock && lock->key;
-            }
-        };
+                static bool has_gold_value(const RE::TESObjectREFRPtr& a_object)
+                {
+                    const auto base = a_object ? a_object->GetBaseObject() : nullptr;
+                    return base && base->GetGoldValue() > 0;
+                }
 
-        struct SendHUDMessage
-        {
-            static void thunk(RE::UIMessageQueue* a_this, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
+                static bool has_key(const RE::TESObjectREFRPtr& a_object)
+                {
+                    const auto lock = a_object ? a_object->GetLock() : nullptr;
+                    return lock && lock->key;
+                }
+            };
+
+            struct SendHUDMessage
             {
-                const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
-                const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
-                RE::PlayerCharacter* player       = Cache::GetPlayerSingleton();
+                static void thunk(RE::UIMessageQueue* a_this, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
+                {
+                    const auto           data         = a_data ? static_cast<RE::HUDData*>(a_data) : nullptr;
+                    const auto           crossHairRef = data ? data->crossHairRef.get() : RE::TESObjectREFRPtr();
+                    RE::PlayerCharacter* player       = Cache::GetPlayerSingleton();
 
-                if (data && crossHairRef) {
-                    const auto settings = Settings::GetSingleton();
-                    if (settings->activate_key_locking) {
-                        if (crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Door || crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Container) {
-                            logger::debug("[CROSSHAIR] crosshair Ref active");
-                            if (crossHairRef.get()->GetLock() != nullptr) {
-                                logger::debug("[CROSSHAIR] has a lock");
-                                if (auto the_key = crossHairRef.get()->GetLock()->key; the_key != nullptr && player->GetItemCount(the_key) > 0) {
-                                    logger::debug("[CROSSHAIR] found key");
-                                    if (settings->DAKGlobal->value == 1) {
-                                        logger::debug("[CROSSHAIR] found DAK status ");
-                                        settings->DAKLock->value = 1;
-                                        logger::debug("[CROSSHAIR] changed Global {} to {}", settings->DAKLock->GetFormEditorID(), settings->DAKLock->value);
-                                        SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
+                    if (data && crossHairRef) {
+                        const auto settings = Settings::GetSingleton();
+                        if (settings->activate_key_locking) {
+                            if (crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Door || crossHairRef.get()->GetBaseObject()->formType == RE::FormType::Container) {
+                                logger::debug("[CROSSHAIR] crosshair Ref active");
+                                if (crossHairRef.get()->GetLock() != nullptr) {
+                                    logger::debug("[CROSSHAIR] has a lock");
+                                    if (auto the_key = crossHairRef.get()->GetLock()->key; the_key != nullptr && player->GetItemCount(the_key) > 0) {
+                                        logger::debug("[CROSSHAIR] found key");
+                                        if (settings->DAKGlobal->value == 1) {
+                                            logger::debug("[CROSSHAIR] found DAK status ");
+                                            settings->DAKLock->value = 1;
+                                            logger::debug("[CROSSHAIR] changed Global {} to {}", settings->DAKLock->GetFormEditorID(), settings->DAKLock->value);
+                                            SKSE::GetTaskInterface()->AddTask([]() { Cache::GetPlayerSingleton()->UpdateCrosshairs(); });
+                                        }
+                                        else
+                                            settings->DAKLock->value = 0;
                                     }
                                     else
                                         settings->DAKLock->value = 0;
                                 }
-                                else
-                                    settings->DAKLock->value = 0;
                             }
                         }
                     }
+                    func(a_this, a_menuName, a_type, a_data);
                 }
-                func(a_this, a_menuName, a_type, a_data);
+
+                inline static REL::Relocation<decltype(thunk)> func;
+            };
+
+            static void Install()
+            {
+                REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(39535, 40621), REL::Relocate(0x289, 0x280) };
+                stl::write_thunk_call<SendHUDMessage>(target.address());
             }
-
-            inline static REL::Relocation<decltype(thunk)> func;
-        };
-
-        static void Install()
-        {
-            REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(39535, 40621), REL::Relocate(0x289, 0x280) };
-            stl::write_thunk_call<SendHUDMessage>(target.address());
-        }
-    } // namespace CrossHair
-} // namespace UI
+        } // namespace CrossHair
+    }     // namespace UI
 
 } // namespace Event

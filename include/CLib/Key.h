@@ -18,14 +18,14 @@ namespace CLib
         }
     }
 
-    constexpr inline std::uint32_t INVALID_KEY = 0;
+    inline constexpr std::uint32_t INVALID_KEY = 0;
 
     class Key
     {
     public:
         explicit Key(std::uint32_t a_targetHotkey) noexcept : targetHotkey(a_targetHotkey) {}
 
-        bool IsActive() const noexcept  //
+        bool IsActive() const noexcept //
         {
             return hasHotkey;
         }
@@ -46,18 +46,16 @@ namespace CLib
     class KeyCombo
     {
     public:
-        explicit KeyCombo(std::uint32_t a_targetHotkey) noexcept :
-            targetHotkey(a_targetHotkey), targetModifier(INVALID_KEY), count(CalcCount(a_targetHotkey, INVALID_KEY))
-        {}
+        explicit KeyCombo(std::uint32_t a_targetHotkey) noexcept : targetHotkey(a_targetHotkey), targetModifier(INVALID_KEY), count(CalcCount(a_targetHotkey, INVALID_KEY)) {}
 
-        KeyCombo(std::uint32_t a_targetHotkey, std::uint32_t a_targetModifier) noexcept :
-            targetHotkey(a_targetHotkey), targetModifier(a_targetModifier),
-            count(CalcCount(a_targetHotkey, a_targetModifier))
-        {}
+        KeyCombo(std::uint32_t a_targetHotkey, std::uint32_t a_targetModifier) noexcept
+            : targetHotkey(a_targetHotkey), targetModifier(a_targetModifier), count(CalcCount(a_targetHotkey, a_targetModifier))
+        {
+        }
 
         std::uint32_t Count() const noexcept { return count; }
 
-        bool IsActive() const noexcept  //
+        bool IsActive() const noexcept //
         {
             return hasHotkey && (targetModifier == INVALID_KEY || hasModifier);
         }
@@ -81,9 +79,11 @@ namespace CLib
         {
             if (a_targetHotkey == INVALID_KEY) {
                 return 0;
-            } else if (a_targetModifier == INVALID_KEY) {
+            }
+            else if (a_targetModifier == INVALID_KEY) {
                 return 1;
-            } else {
+            }
+            else {
                 return 2;
             }
         }
@@ -96,4 +96,4 @@ namespace CLib
 
         const std::uint16_t count;
     };
-}
+} // namespace CLib

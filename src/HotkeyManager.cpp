@@ -1,17 +1,14 @@
 #include "HotkeyManager.h"
 #include "CLib/Key.h"
-#include "Settings.h"
 #include "InputManager.h"
+#include "Settings.h"
 
 namespace
 {
     class HotkeyContext
     {
     public:
-        explicit HotkeyContext(const Settings* config)
-            : hotkey(config->DAKModifierKey), hotkeyController(config->DAKControllerKey)
-        {
-        }
+        explicit HotkeyContext(const Settings* config) : hotkey(config->DAKModifierKey), hotkeyController(config->DAKControllerKey) {}
 
         void Update(const RE::ButtonEvent* a_button)
         {
@@ -37,14 +34,14 @@ namespace
                 /*else {
                     if (settings->DAKGlobal->value != 0) {
                         Event::InputEventSink::ChangeGlobal(settings->DAKGlobal, 0);
-                    }
-                }*/
+ }
+ }*/
             }
         }
 
         void Finalize(Event::InputEventSink* app)
         {
-            const Settings* settings = Settings::GetSingleton();
+            const Settings* settings         = Settings::GetSingleton();
             auto            dak_global_value = settings->DAKGlobal->value;
             for (std::uint32_t count = 2; count > 0; --count) {
                 bool done = false;
@@ -54,7 +51,7 @@ namespace
                         app->ChangeGlobal(settings->DAKGlobal, 1);
                         app->UpdateHUD();
                         done = true;
-                    }                    
+                    }
                 }
 
                 if (hotkeyController.IsActive()) {
@@ -62,7 +59,7 @@ namespace
                         app->ChangeGlobal(settings->DAKGlobal, 1);
                         app->UpdateHUD();
                         done = true;
-                    }                    
+                    }
                 }
                 else {
                     if (!hotkey.IsActive() && !hotkeyController.IsActive()) {
@@ -83,8 +80,7 @@ namespace
 
     private:
         CLib::KeyCombo hotkey;
-        CLib::Key hotkeyController;
-
+        CLib::Key      hotkeyController;
     };
 } // namespace
 
