@@ -63,7 +63,6 @@ namespace
                 }
                 else {
                     if (!hotkey.IsActive() && !hotkeyController.IsActive()) {
-                        logger::debug("no hotkey active");
                         if (dak_global_value != 0) {
                             app->ChangeGlobal(settings->DAKGlobal, 0);
                             app->UpdateHUD();
