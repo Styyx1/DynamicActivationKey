@@ -62,7 +62,7 @@ namespace Event
             }
         }
 
-        inline static bool updating{false};
+        inline static bool updating{ false };
 
         inline void UpdateHUD()
         {
@@ -85,7 +85,7 @@ namespace Event
         InputEventSink() = default;
     };
 
-    //namespace UI
+    // namespace UI
     //{
 
     //    namespace CrossHair

@@ -15,7 +15,6 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
     }
 }
 
-
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
     InitializeLogging();

@@ -2,20 +2,19 @@
 #include "CLib/Key.h"
 #include "InputManager.h"
 #include "Settings.h"
+
 namespace
 {
     class HotkeyContext
     {
     public:
-
-       inline static std::string logBool(bool &bool_to_log)
+        inline static std::string logBool(bool& bool_to_log)
         {
             if (bool_to_log)
                 return "true";
             if (!bool_to_log)
                 return "false";
         }
-
 
         explicit HotkeyContext(const Settings* config) : hotkey(config->DAKModifierKey), hotkeyController(config->DAKControllerKey) {}
 
@@ -34,7 +33,7 @@ namespace
                 if (a_button->IsDown()) {
                     hotkey.UpdateDown(key);
                     hotkeyController.Update(key);
-                }                
+                }
             }
         }
 
@@ -57,8 +56,8 @@ namespace
                                 logger::debug("HUD changed");
                             }
                             else
-                                logger::debug("no HUD updated");                           
-                        }                        
+                                logger::debug("no HUD updated");
+                        }
                         done = true;
                     }
                 }
@@ -92,7 +91,7 @@ namespace
                                 }
                                 else
                                     logger::debug("no HUD updated");
-                            }                            
+                            }
                             done = true;
                         }
                     }
