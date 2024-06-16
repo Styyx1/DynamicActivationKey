@@ -15,16 +15,6 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
     }
 }
 
-extern "C" DLLEXPORT constexpr auto SKSEPlugin_Version = []() {
-    SKSE::PluginVersionData v{};
-    v.PluginVersion(REL::Version{ 1, 2, 0, 0 });
-    v.PluginName("DynamicActivationKey"sv);
-    v.AuthorName("Styyx"sv);
-    v.UsesAddressLibrary(true);
-    v.HasNoStructUse(true);
-    v.UsesStructsPost629(false);
-    return v;
-}();
 
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
@@ -34,8 +24,9 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
     const auto version{ plugin->GetVersion() };
 
     logger::info("{} {} is loading...", plugin->GetName(), version);
+    Cache::game_version = skse->RuntimeVersion();
     Init(skse);
-
+    logger::info("Skyrim version {} is running!", Cache::game_version.string());
     Cache::CacheAddLibAddresses();
     if (const auto messaging{ SKSE::GetMessagingInterface() }; !messaging->RegisterListener(Listener))
         return false;

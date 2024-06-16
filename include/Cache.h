@@ -17,4 +17,6 @@ namespace Cache
         return singleton->get();
     }
 
+    inline REL::Version game_version;
+
 } // namespace Cache
